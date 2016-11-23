@@ -1,7 +1,8 @@
 actions :create
 default_action :create
 
-attribute :domain, kind_of: String, required: true
+attribute :conf_name, kind_of: String, required: true
+attribute :domains, kind_of: String, required: true
 
 attribute :email, kind_of: String, required: true
 

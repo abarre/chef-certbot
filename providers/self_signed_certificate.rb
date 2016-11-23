@@ -29,7 +29,7 @@ action :create do
       action :create
     end
 
-    certbot_activate_certificate new_resource.domain do
+    certbot_activate_certificate new_resource.conf_name do
       cert_path self_signed_cert_path
       key_path self_signed_key_path
     end
@@ -37,13 +37,13 @@ action :create do
 end
 
 def certificate_dir
-  @certificate_dir ||= certbot_self_signed_directory(new_resource.domain)
+  @certificate_dir ||= certbot_self_signed_directory(new_resource.conf_name)
 end
 
 def self_signed_key_path
-  certbot_self_signed_key_path_for(new_resource.domain)
+  certbot_self_signed_key_path_for(new_resource.conf_name)
 end
 
 def self_signed_cert_path
-  certbot_self_signed_cert_path_for(new_resource.domain)
+  certbot_self_signed_cert_path_for(new_resource.conf_name)
 end

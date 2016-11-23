@@ -6,14 +6,14 @@ action :create do
     recursive true
   end
 
-  cert_command = "#{base_command} #{domain_arg} #{webroot_arg} #{renew_arg} #{test_arg} #{rsa_size_arg}"
+  cert_command = "#{base_command} #{domains_arg} #{webroot_arg} #{renew_arg} #{test_arg} #{rsa_size_arg}"
 
   execute "letsencrypt-certonly" do
     command "#{cert_command} --email #{new_resource.email} --agree-tos"
   end
 
   if new_resource.install_cron
-    cron "renew_#{new_resource.domain}" do
+    cron "renew_#{new_resource.conf_name}" do
       time new_resource.frequency
       user 'root'
       command "#{cert_command} && service nginx restart"
@@ -21,9 +21,9 @@ action :create do
     end
   end
 
-  certbot_activate_certificate new_resource.domain do
-    key_path certbot_privatekey_path_for(new_resource.domain)
-    cert_path certbot_cert_path_for(new_resource.domain)
+  certbot_activate_certificate new_resource.conf_name do
+    key_path certbot_privatekey_path_for(new_resource.conf_name)
+    cert_path certbot_cert_path_for(new_resource.conf_name)
   end
 end
 
@@ -46,8 +46,8 @@ def webroot_arg
   "--webroot -w #{webroot_dir}"
 end
 
-def domain_arg
-  "--domain #{new_resource.domain}"
+def domains_arg
+  "--domains #{new_resource.domains.split(' ').join(',')}"
 end
 
 def base_command
@@ -55,7 +55,7 @@ def base_command
 end
 
 def webroot_dir
-  certbot_webroot_path_for new_resource.domain
+  certbot_webroot_path_for new_resource.conf_name
 end
 
 def well_known_dir
